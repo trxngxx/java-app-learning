@@ -47,7 +47,6 @@ pipeline {
             }
             steps {
                 script {
-                    // Thực hiện các bước triển khai ứng dụng Java
                     sh "sed -i 's/{tag}/$TAG/g' /home/ubuntu/java-app-$ENV/docker-compose.yaml"
                     sh "docker-compose up -d"
                 }
