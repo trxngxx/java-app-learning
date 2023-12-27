@@ -12,7 +12,7 @@ pipeline {
             agent {
                 node {
                     label "Build-server"
-                    customWorkspace "/home/seta/jenkins/"
+                    customWorkspace "/home/seta/java/"
                 }
             }
             environment {
@@ -21,14 +21,16 @@ pipeline {
             steps {
                 script {
                     // Xây dựng Docker image
-                    docker.build('29trxngxx/my-java-app:latest', '-f Dockerfile .')
-                    
+                    sh "docker build . -t devops-training-java-$ENV:latest --build-arg BUILD_ENV=$ENV -f Dockerfile"
+
                     sh "cat docker.txt | docker login -u 29trxngxx --password-stdin"
 
                     // Đẩy Docker image lên Docker Hub
-                    docker.withRegistry('https://registry.hub.docker.com', DOCKERHUB_CREDENTIALS) {
-                        docker.image('29trxngxx/my-java-app:latest').push()
-                    }
+                    sh "docker tag devops-training-java-$ENV:latest 29trxngxx/devops-training:$TAG"
+
+                    sh "docker push 29trxngxx/devops-training:$TAG"
+
+                    sh "docker rmi -f 29trxngxx/devops-training:$TAG"
                 }
             }
         }
@@ -37,7 +39,7 @@ pipeline {
             agent {
                 node {
                     label "Target-Server"
-                    customWorkspace "/home/ubuntu/jenkins-$ENV/"
+                    customWorkspace "/home/ubuntu/java-app-$ENV/"
                 }
             }
             environment {
@@ -46,7 +48,7 @@ pipeline {
             steps {
                 script {
                     // Thực hiện các bước triển khai ứng dụng Java
-                    sh "sed -i 's/{tag}/$TAG/g' /home/ubuntu/jenkins-$ENV/docker-compose.yaml"
+                    sh "sed -i 's/{tag}/$TAG/g' /home/ubuntu/java-app-$ENV/docker-compose.yaml"
                     sh "docker-compose up -d"
                 }
             }
