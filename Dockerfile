@@ -12,8 +12,8 @@ FROM amazoncorretto
  
 WORKDIR /home/ubuntu/java-app/target
  
-COPY --from=builder /home/ubuntu/java-app/target/demo-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=builder /home/ubuntu/java-app/target/SimpleWebApp-1.0-SNAPSHOT.jar app.jar
  
-EXPOSE 8080
+EXPOSE 8000
  
 ENTRYPOINT ["java", "-jar", "app.jar"]
