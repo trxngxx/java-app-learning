@@ -1,14 +1,14 @@
 # Stage 1: Build the application
 FROM maven:3.8.4-openjdk-17 AS builder
  
-WORKDIR /app
+WORKDIR /home/ubuntu/java-app
  
 COPY . .
  
 RUN mvn clean install
  
 # Stage 2: Run the application
-FROM amazoncorretto:8-alpine 
+FROM amazoncorretto
  
 WORKDIR /app
  
