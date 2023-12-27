@@ -1,40 +1,53 @@
 pipeline {
-    agent any
+    agent none
 
     environment {
-        JAVA_HOME = '/usr/lib/jvm/java-17-openjdk-amd64'
-        DOCKERHUB_CREDENTIALS = '29trxngxx'
+        ENV = "dev"
+        NODE = "Build-server"
+        //DOCKERHUB_CREDENTIALS = 'your-dockerhub-credentials-id' // Thay bằng ID của Jenkins Credentials cho Docker Hub
     }
 
     stages {
-        stage('Build') {
+        stage('Build and Push Docker Image') {
+            agent {
+                node {
+                    label "Build-server"
+                    customWorkspace "/home/seta/jenkins/"
+                }
+            }
+            environment {
+                TAG = sh(returnStdout: true, script: "git rev-parse -short=10 HEAD | tail -n +2").trim()
+            }
             steps {
                 script {
-                    def mvnHome = tool 'Maven' // 'Maven' là tên của Maven Installation trong Jenkins
+                    // Xây dựng Docker image
+                    docker.build('29trxngxx/my-java-app:latest', '-f Dockerfile .')
+                    
+                    sh "cat docker.txt | docker login -u 29trxngxx --password-stdin"
 
-                    withMaven(
-                        maven: mvnHome,
-                        mavenSettingsConfig: 'my-maven-settings', // 'my-maven-settings' là ID của Maven Settings trong Jenkins
-                        mavenLocalRepo: '.m2/repository'
-                    ) {
-                        sh 'mvn clean install'
+                    // Đẩy Docker image lên Docker Hub
+                    docker.withRegistry('https://registry.hub.docker.com', DOCKERHUB_CREDENTIALS) {
+                        docker.image('29trxngxx/my-java-app:latest').push()
                     }
                 }
             }
         }
 
-        stage('Deploy') {
+        stage("Deploy") {
+            agent {
+                node {
+                    label "Target-Server"
+                    customWorkspace "/home/ubuntu/jenkins-$ENV/"
+                }
+            }
+            environment {
+                TAG = sh(returnStdout: true, script: "git rev-parse -short=10 HEAD | tail -n +2").trim()
+            }
             steps {
                 script {
-                    docker.build('your-dockerhub-username/my-java-app:latest', '-f Dockerfile .')
-
-                    // You may push the Docker image to a registry here
-                    // docker.withRegistry('https://registry.example.com', 'registry-credentials') {
-                    //     docker.image('my-java-app:latest').push()
-                    // }
-                    docker.withRegistry('https://registry.hub.docker.com', DOCKERHUB_CREDENTIALS) {
-                        docker.image('29trxngxx/my-java-app:latest').push()
-                    }
+                    // Thực hiện các bước triển khai ứng dụng Java
+                    sh "sed -i 's/{tag}/$TAG/g' /home/ubuntu/jenkins-$ENV/docker-compose.yaml"
+                    sh "docker-compose up -d"
                 }
             }
         }
