@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         JAVA_HOME = '/usr/lib/jvm/java-17-openjdk-amd64'
+        DOCKERHUB_CREDENTIALS = '29trxngxx'
     }
 
     stages {
@@ -25,12 +26,15 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    docker.build('my-java-app:latest', '-f Dockerfile .')
+                    docker.build('your-dockerhub-username/my-java-app:latest', '-f Dockerfile .')
 
                     // You may push the Docker image to a registry here
                     // docker.withRegistry('https://registry.example.com', 'registry-credentials') {
                     //     docker.image('my-java-app:latest').push()
                     // }
+                    docker.withRegistry('https://registry.hub.docker.com', DOCKERHUB_CREDENTIALS) {
+                        docker.image('29trxngxx/my-java-app:latest').push()
+                    }
                 }
             }
         }
