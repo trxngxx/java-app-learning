@@ -8,7 +8,7 @@ COPY . .
 RUN mvn clean install
  
 # Stage 2: Run the application
-FROM openjdk:17-jre-slim
+FROM amazoncorretto:8-alpine 
  
 WORKDIR /app
  
