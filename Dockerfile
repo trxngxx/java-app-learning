@@ -16,4 +16,4 @@ COPY --from=builder /home/ubuntu/java-app/target/SimpleWebApp-1.0-SNAPSHOT.jar a
  
 EXPOSE 8000
  
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "/app.jar"]

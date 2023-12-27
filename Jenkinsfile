@@ -4,7 +4,6 @@ pipeline {
     environment {
         ENV = "dev"
         NODE = "Build-server"
-        //DOCKERHUB_CREDENTIALS = 'your-dockerhub-credentials-id' // Thay bằng ID của Jenkins Credentials cho Docker Hub
     }
 
     stages {
@@ -26,11 +25,11 @@ pipeline {
                     sh "cat docker.txt | docker login -u 29trxngxx --password-stdin"
 
                     // Đẩy Docker image lên Docker Hub
-                    sh "docker tag devops-training-java-$ENV:latest 29trxngxx/devops-training:$TAG"
+                    sh "docker tag devops-training-java-$ENV:latest 29trxngxx/java-app-demo:$TAG"
 
-                    sh "docker push 29trxngxx/devops-training:$TAG"
+                    sh "docker push 29trxngxx/java-app-demo:$TAG"
 
-                    sh "docker rmi -f 29trxngxx/devops-training:$TAG"
+                    sh "docker rmi -f 29trxngxx/java-app-demo:$TAG"
                 }
             }
         }
