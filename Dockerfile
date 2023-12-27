@@ -12,7 +12,7 @@ FROM amazoncorretto:8-alpine
  
 WORKDIR /app
  
-COPY --from=builder /app/target/demo-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=builder /home/ubuntu/java-app/demo-0.0.1-SNAPSHOT.jar app.jar
  
 EXPOSE 8080
  
