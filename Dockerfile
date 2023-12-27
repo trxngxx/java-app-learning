@@ -10,9 +10,9 @@ RUN mvn clean install
 # Stage 2: Run the application
 FROM amazoncorretto
  
-WORKDIR /app
+WORKDIR /home/ubuntu/java-app/target
  
-COPY --from=builder /home/ubuntu/java-app/demo-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=builder /home/ubuntu/java-app/target/demo-0.0.1-SNAPSHOT.jar app.jar
  
 EXPOSE 8080
  
