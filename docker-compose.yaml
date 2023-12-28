@@ -1,9 +1,9 @@
 version: '3'
 
 services:
-  db-java-app:
+  db:
     image: mysql:latest
-    container_name: db
+    container_name: db-java-app
     environment:
       MYSQL_ROOT_PASSWORD: training-2023
       MYSQL_DATABASE: users
